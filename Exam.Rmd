@@ -1,0 +1,133 @@
+---
+title: "Hands-on dataanalysis in R"
+author: 'Flow-number: 86'
+date: "1/18/2022"
+output: word_document
+---
+
+
+Ps. This code assumes the dataset is already in your working directory
+```{r}
+ID86 <- read.csv("data00.csv")
+head(ID86, 2)
+```
+
+# Question 1a
+
+Checking for all unique days of the week
+```{r}
+unique(ID86$Day)
+```
+
+Renaming Tuesday and Friday
+```{r}
+ID86$Day[ID86$Day=="Tuesday"] <-"Tues"
+ID86$Day[ID86$Day=="Friday"] <-"Fri"
+```
+
+Sub-setting for Tuesday evening in the whole of April and stored in Q1a
+```{r}
+April <- ID86[grepl("Apr", ID86$Date),]
+Tuesday <- subset(April, April$Day=="Tues")
+Q1_a <- subset(Tuesday,Tuesday$Daytime=="night")
+
+sum(Q1_a$ItemsOrdered)
+#The number of products purchased on Tuesday evenings throughout April is 22
+```
+
+# Question 1b
+```{r}
+nrow(Q1_a)
+#The number of purchase events on Tuesday evening throughout April is 6
+```
+
+# Question 2a
+```{r}
+One_product <- subset(ID86, ID86$ItemsOrdered=="1")
+nrow(One_product)
+#the number of times 1 product was bought is 60
+```
+
+# Question 2b
+```{r}
+max(ID86$ItemsOrdered)
+#The highest amount of bought products in 1 single order is 11
+```
+
+# Question 2c
+```{r}
+plot(ID86$ItemsOrdered, main = "Items Ordered")
+hist(ID86$ItemsOrdered, main = "Items Ordered")
+```
+
+# Question 3a
+```{r}
+men <- subset(ID86, ID86$Gender=="Male")
+men_total <- sum(men$ItemsOrdered)
+men_total
+
+women <- subset(ID86, ID86$Gender=="Female")
+women_total <- sum(women$ItemsOrdered)
+women_total
+
+
+product_difference <- men_total- women_total
+product_difference 
+#men buy 267 less than the women 
+```
+
+# Question 3b
+Calculating the average for both men and women
+```{r}
+avg_men <- mean(men$ItemsOrdered)
+avg_men
+
+avg_women <- mean(women$ItemsOrdered)
+avg_women
+```
+
+Average difference for both men and women
+```{r}
+avg_difference <- avg_men-avg_women
+avg_difference
+```
+
+Converting the avg_difference to percentage
+```{r}
+avg_difference*100       
+#The difference is significant.
+```
+
+# Question 3c
+Total purchased by men
+```{r}
+men_purchase <- sum(men$TotalAmountPaid)
+men_purchase
+```
+
+Total purchased by women
+```{r}
+women_purchased <- sum(women$TotalAmountPaid)
+women_purchased
+```
+
+Purchased difference for men and women
+```{r}
+purchased_difference <- men_purchase - women_purchased
+purchased_difference
+#The purchase difference between men and women is -12263.31 
+```
+# Question 4
+Tabulating the revenue by weekday
+```{r}
+day_revenue <- aggregate(ID86$TotalAmountPaid, by=list(weekday=ID86$Day),FUN =sum)
+class(day_revenue)
+
+highest_revenue <- subset(day_revenue, day_revenue$x==max(day_revenue$x))
+
+highest_revenue$x
+#The highest revenue
+
+highest_revenue$weekday 
+#The day with the highest revenue is Saturday
+```
